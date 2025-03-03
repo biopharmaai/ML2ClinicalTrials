@@ -3,7 +3,9 @@
 
 <p align="center"><img src="./trial.pdf" alt="logo" width="810px" /></p>
 
-This repository contains code for training and testing benchmark models on Trialbench datasets. The provided scripts facilitate the evaluation of various machine learning algorithms, enabling researchers to assess their performance on different clinical trial phases and tasks.
+This repository contains code for training and testing benchmark models on Trialbench datasets. TrialBench comprises 23 AI-ready clinical trial datasets for 8 well-defined tasks: clinical trial duration forecasting, patient dropout rate prediction, serious adverse event, all-cause mortality rate prediction, trial approval outcome prediction, trial failure reason identification, eligibility criteria design, and drug dose finding. The provided scripts facilitate the evaluation of various machine learning algorithms, enabling researchers to assess their performance on different clinical trial phases and tasks. 
+
+
 
 ## 🚀 Installation 
 We recommend creating a dedicated virtual environment (such as conda) with Python 3.7+ to ensure consistent performance. Once your environment is ready, install the required dependencies:
