@@ -17,8 +17,8 @@
 ## 📝 Overview
 
 This repository offers:
-- **TrialBench**: Toy samples of AI-ready clinical trial datasets TrialBench.
-- **AI4Trial**: Codebase for running experiments on tasks such as mortality rate prediction, serious adverse event forecasting, and more.
+- [**TrialBench**](https://github.com/ML2Health/ML2ClinicalTrials/tree/main/Trialbench): Toy samples of AI-ready clinical trial datasets TrialBench.
+- [**AI4Trial**](https://github.com/ML2Health/ML2ClinicalTrials/tree/main/AI4Trial): Codebase for running experiments on tasks such as mortality rate prediction, serious adverse event forecasting, and more.
 
 ---
 
