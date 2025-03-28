@@ -16,7 +16,7 @@ pip install -r requirements.txt
 ```
 
 ## 🔩 Download
-All necessary supporting documents can be downloaded from this [link](https://zjueducn-my.sharepoint.com/:f:/g/personal/yaojunhu_zju_edu_cn/EsgIPd3QyjVMipw6tkPv3hoBRk83HqO4X_laZhf6nD87IA?e=0O8fFi). Place them into the `data/` folder.
+All necessary supporting documents can be downloaded from this [link](https://drive.google.com/drive/folders/1fp350IUj284EnTHVgSWtq9qIq0Mlbjg9?usp=sharing). Place them into the `data/` folder.
 
 ## 📚 Trialbench
 This repository automatically fetches the Trialbench dataset from [Huggingface](https://huggingface.co/datasets/ML2Healthcare/ClinicalTrialDataset). For quick exploration, toy samples are available in [Trialbench](https://github.com/ML2Health/ML2ClinicalTrials/tree/main/Trialbench). You can also [Download All Data](https://zenodo.org/records/14975339/files/all_task.zip?download=1) at once.
