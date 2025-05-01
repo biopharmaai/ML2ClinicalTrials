@@ -1,5 +1,7 @@
 # ML2ClinicalTrials
 
+[![License](https://img.shields.io/github/license/ML2Health/ML2ClinicalTrials.svg)](https://github.com/ML2Health/ML2ClinicalTrials/blob/main/LICENSE)
+
 **ML2ClinicalTrials** is an open-source project providing AI-ready clinical trial datasets and tools to facilitate research on trial duration, patient dropout, serious adverse events, mortality prediction, and more. This repository is actively maintained and the directory structure may evolve as new features and datasets are added.
 
 ## 📰 News
@@ -27,7 +29,7 @@ This repository offers:
 If you encounter any issues or have questions, please open an issue on [GitHub](https://github.com/ML2Health/ML2ClinicalTrials/issues). For additional help, feel free to reach out to our team.
 
 
-### 📢 Citation
+## 📢 Citation
 
 If you use this work in your research or projects, please cite it as follows:
 
@@ -38,3 +40,5 @@ If you use this work in your research or projects, please cite it as follows:
   journal={arXiv preprint arXiv:2407.00631},
   year={2024}
 }
+```
+
