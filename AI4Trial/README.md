@@ -19,18 +19,18 @@ pip install -r requirements.txt
 All necessary supporting documents can be downloaded from this [link](https://drive.google.com/drive/folders/1fp350IUj284EnTHVgSWtq9qIq0Mlbjg9?usp=sharing). Place them into the `data/` folder.
 
 ## 📚 Trialbench
-For quick exploration, toy samples are available in [Trialbench](https://github.com/ML2Health/ML2ClinicalTrials/tree/main/Trialbench). You can also [Download All Data](https://zenodo.org/records/15358396/files/all_data.zip?download=1) at once.
+For quick exploration, toy samples are available in [Trialbench](https://github.com/ML2Health/ML2ClinicalTrials/tree/main/Trialbench). You can also [Download All Data](https://zenodo.org/records/15426202/files/all_data.zip?download=1) at once.
 
 #### Sub-Task Datasets
 
-1. [Trial Duration Forecasting](https://zenodo.org/records/15358396/files/trial-duration-forecasting.zip?download=1)
-2. [Patient Dropout Event Forecasting](https://zenodo.org/records/15358396/files/patient-dropout-event-forecasting.zip?download=1)
-3. [Serious Adverse Event Forecasting](https://zenodo.org/records/15358396/files/serious-adverse-event-forecasting.zip?download=1)
-4. [Mortality Event Prediction](https://zenodo.org/records/15358396/files/mortality-event-prediction.zip?download=1)
-5. [Trial Approval Forecasting](https://zenodo.org/records/15358396/files/trial-approval-forecasting.zip?download=1)
-6. [Trial Failure Reason Identification](https://zenodo.org/records/15358396/files/trial-failure-reason-identification.zip?download=1)
-7. [Eligibility Criteria Design](https://zenodo.org/records/15358396/files/eligibility-criteria-design.zip?download=1)
-8. [Drug Dose Finding](https://zenodo.org/records/15358396/files/drug-dose-prediction.zip?download=1)
+1. [Trial Duration Forecasting](https://zenodo.org/records/15426202/files/trial-duration-forecasting.zip?download=1)
+2. [Patient Dropout Event Forecasting](https://zenodo.org/records/15426202/files/patient-dropout-event-forecasting.zip?download=1)
+3. [Serious Adverse Event Forecasting](https://zenodo.org/records/15426202/files/serious-adverse-event-forecasting.zip?download=1)
+4. [Mortality Event Prediction](https://zenodo.org/records/15426202/files/mortality-event-prediction.zip?download=1)
+5. [Trial Approval Forecasting](https://zenodo.org/records/15426202/files/trial-approval-forecasting.zip?download=1)
+6. [Trial Failure Reason Identification](https://zenodo.org/records/15426202/files/trial-failure-reason-identification.zip?download=1)
+7. [Eligibility Criteria Design](https://zenodo.org/records/15426202/files/eligibility-criteria-design.zip?download=1)
+8. [Drug Dose Finding](https://zenodo.org/records/15426202/files/drug-dose-prediction.zip?download=1)
 
 Here’s a refined and expanded Usage section with a clear explanation of base_name and how to use it to run different experiments:
 
