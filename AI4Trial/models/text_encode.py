@@ -77,15 +77,15 @@ def save_sentence_bert_dict_pkl():
             text_sentence_2_embedding[sentence] = text2vec(sentence)
         except:
             continue
-    pickle.dump(text_sentence_2_embedding, open('../data/othersentences2embedding.pkl', 'wb'))
+    pickle.dump(text_sentence_2_embedding, open('../data/sentences2embedding.pkl', 'wb'))
     return 
 
 def load_sentence_2_vec():
-    sentence_2_vec = pickle.load(open('../data/othersentences2embedding.pkl', 'rb'))
+    sentence_2_vec = pickle.load(open('../data/sentences2embedding.pkl', 'rb'))
     return sentence_2_vec 
 
-sentence_2_vec = load_sentence_2_vec()
 def text2feature(text_lst):
+    sentence_2_vec = load_sentence_2_vec()
     text_feature = [sentence_2_vec[sentence].view(1,-1) for sentence in text_lst if sentence in sentence_2_vec]
     if text_feature == []:
         text_feature = torch.zeros(1,768)

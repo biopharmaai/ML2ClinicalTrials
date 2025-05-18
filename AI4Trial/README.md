@@ -1,91 +1,100 @@
-# TrialBench: AI-Ready Clinical Trial Datasets
+# TrialBench: Multi-modal AI-ready Clinical Trial Datasets
 
-<a href='https://huyjj.github.io/Trialbench/'><img src='https://img.shields.io/badge/Project-Page-Green'></a>  <a href='https://arxiv.org/pdf/2407.00631'><img src='https://img.shields.io/badge/Paper-Arxiv-red'></a> 
+[![PyPI version](https://img.shields.io/pypi/v/trialbench.svg?color=brightgreen)](https://pypi.org/project/trialbench/)
+[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-
-<p align="center"><img src="./trial.pdf" alt="logo" width="810px" /></p>
-
-This repository contains code for training and testing benchmark models on Trialbench datasets. TrialBench comprises 23 AI-ready clinical trial datasets for 8 well-defined tasks: clinical trial duration forecasting, patient dropout rate prediction, serious adverse event, all-cause mortality rate prediction, trial approval outcome prediction, trial failure reason identification, eligibility criteria design, and drug dose finding. The provided scripts facilitate the evaluation of various machine learning algorithms, enabling researchers to assess their performance on different clinical trial phases and tasks. 
-
-
-
-## 🚀 Installation 
-We recommend creating a dedicated virtual environment (such as conda) with Python 3.7+ to ensure consistent performance. Once your environment is ready, install the required dependencies:
-```
-pip install -r requirements.txt
-```
-
-## 🔩 Download
-All necessary supporting documents can be downloaded from this [link](https://drive.google.com/drive/folders/1fp350IUj284EnTHVgSWtq9qIq0Mlbjg9?usp=sharing). Place them into the `data/` folder.
-
-## 📚 Trialbench
-This repository automatically fetches the Trialbench dataset from [Huggingface](https://huggingface.co/datasets/ML2Healthcare/ClinicalTrialDataset). For quick exploration, toy samples are available in [Trialbench](https://github.com/ML2Health/ML2ClinicalTrials/tree/main/Trialbench). You can also [Download All Data](https://zenodo.org/records/14975339/files/all_task.zip?download=1) at once.
-
-#### Sub-Task Datasets
-
-1. [Trial Duration Forecasting](https://zenodo.org/records/14975339/files/trial-duration-forecasting.zip?download=1)
-2. [Patient Dropout Event Forecasting](https://zenodo.org/records/14975339/files/patient-dropout-event-forecasting.zip?download=1)
-3. [Serious Adverse Event Forecasting](https://zenodo.org/records/14975339/files/serious-adverse-event-forecasting.zip?download=1)
-4. [Mortality Event Prediction](https://zenodo.org/records/14975339/files/mortality-event-prediction.zip?download=1)
-5. [Trial Approval Forecasting](https://zenodo.org/records/14975339/files/trial-approval-forecasting.zip?download=1)
-6. [Trial Failure Reason Identification](https://zenodo.org/records/14975339/files/trial-failure-reason-identification.zip?download=1)
-7. [Eligibility Criteria Design](https://zenodo.org/records/14975339/files/eligibility-criteria-design.zip?download=1)
-8. [Drug Dose Finding](https://zenodo.org/records/14975339/files/drug-dose-prediction.zip?download=1)
-
-Here’s a refined and expanded Usage section with a clear explanation of base_name and how to use it to run different experiments:
-
-## 💻 Usage
-
-To run an experiment for mortality rate prediction, navigate to the `AI4Trial` directory and execute:
+## 1. Installation
 
 ```bash
-cd AI4Trial
-python learn_multi_model.py --base_name mortality_rate --phase 'Phase 1' --exp Temp
-```
-#### Configurable Parameters
---base_name: Specifies the task to run (see the available options below).
-
---phase: Defines the experimental phase (e.g., 'Phase 1').
-
---exp: Sets the output dir for tracking.
-
-
-#### Available base_name Options
-
-The base_name parameter determines which dataset and task to use. Below are the supported tasks:
-
-| base_name                  | Task Description                                      |
-|----------------------------|-------------------------------------------------------|
-| mortality_rate             | Mortality event prediction                            |
-| serious_adverse_rate       | Serious adverse event forecasting                     |
-| patient_dropout_rate       | Patient dropout event forecasting                     |
-| duration                   | Trial duration forecasting                            |
-| outcome                    | Trial outcome prediction                              |
-| failure_reason             | Trial failure reason identification                   |
-| serious_adverse_rate_yn    | Binary classification for serious adverse events      |
-| patient_dropout_rate_yn    | Binary classification for patient dropout events      |
-| mortality_rate_yn          | Binary classification for mortality prediction        |
-| dose                       | Drug dose finding (regression)                        |
-| dose_cls                   | Drug dose finding (classification )                   |
-
-To run experiments for other tasks, replace mortality_rate in the command with the corresponding base_name from the table above. For example, to run a serious adverse event forecasting experiment:
-
-```
-python learn_multi_model.py --base_name serious_adverse_rate --phase 'Phase 2' --exp TestRun
+pip install trialbench
 ```
 
-Feel free to explore different tasks by adjusting base_name, phase, and exp accordingly.
+## 2. Tasks & Phases
 
-## 💼 Support
+| Supported Tasks              | Task Name                                            | Phase Name |
+| ---------------------------- | ---------------------------------------------------- | ---------- |
+| Mortality Prediction         | `mortality_rate`/`mortality_rate_yn`             | 1-4        |
+| Adverse Event Prediction     | `serious_adverse_rate`/`serious_adverse_rate_yn` | 1-4        |
+| Patient Retention Prediction | `patient_dropout_rate`/`patient_dropout_rate_yn` | 1-4        |
+| Trial Duration Prediction    | `duration`                                         | 1-4        |
+| Trial Outcome Prediction     | `outcome`                                          | 1-4        |
+| Trial Failure Analysis       | `failure_reason`                                   | 1-4        |
+| Dosage Prediction            | `dose`/`dose_cls`                                | All        |
 
-If you encounter any issues or have questions, please open an issue on [GitHub](https://github.com/ML2Health/ML2ClinicalTrials/issues). For additional help, feel free to reach out to our team.
-
-
-### 📢 Citation
-
-If you use this work in your research or projects, please cite it as follows:
+### Clinical Trial Phases
 
 ```
+Phase 1: Safety Evaluation
+Phase 2: Efficacy Assessment
+Phase 3: Large-scale Testing
+Phase 4: Post-marketing Surveillance
+```
+
+### 3. Quick Start
+
+#### 3.1 Usage of `trialbench`
+
+```python
+import trialbench
+
+# Download all datasets at once (optional)
+save_path = 'data/'
+trialbench.function.download_all_data(save_path)
+
+# Load dataset
+task = 'dose'
+phase = 'All'
+
+# Load dataloader.Dataloader 
+train_loader, valid_loader, test_loader, num_classes, tabular_input_dim = trialbench.function.load_data(task, phase, data_format='dl')
+# or Load pd.Dataframe
+train_df, valid_df, test_df, num_classes, tabular_input_dim = trialbench.function.load_data(task, phase, data_format='df')
+```
+
+#### 3.2 Attributes of Each Task
+
+Each task provides different feature sets. The Dosage Prediction task returns `nctid_lst`, `smiles_lst`, and `mesh_lst`, while all other tasks provide `nctid_lst`, `icdcode_lst`, `smiles_lst`, `criteria_lst`, `tabular_lst`, `text_lst`, and `mesh_lst`.
+
+All tasks use `label_lst` as the label variable. Please refer to the guide documentation for detailed feature as well as label descriptions.
+
+```
+# Demo for accessing data elements
+task = 'dose'
+phase = 'All'
+
+# When using DataLoader objects:
+# Features
+nctid_list = train_loader.dataset.nctid_lst
+smiles_list = train_loader.dataset.smiles_lst
+mesh_list = train_loader.dataset.mesh_lst
+# Labels
+# return [datatset_name, label_max, label_min, label_avg], e.g. ['NCT03422510', 2, 2, 2]
+label_list = train_loader.dataset.label_lst 
+
+# When using DataFrames:
+# Features
+nctid_list = train_df.nctid_lst
+smiles_list = train_df.smiles_lst
+mesh_list = train_df.mesh_lst
+# Labels
+label_list = train_df.label_lst
+```
+
+4. Data Loading
+
+### `load_data` Parameters
+
+| Parameter       | Type | Description                                              |
+| --------------- | ---- | -------------------------------------------------------- |
+| `task`        | str  | Target prediction task (e.g., 'mortality_rate_yn')       |
+| `phase`       | int  | Clinical trial phase (1-4)                               |
+| `data_format` | str  | Data format ('dl' for Dataloader, 'df' for pd.DataFrame) |
+
+## 5. Citation
+
+If you use TrialBench in your research, please cite:
+
+```bibtex
 @article{chen2024trialbench,
   title={Trialbench: Multi-modal artificial intelligence-ready clinical trial datasets},
   author={Chen, Jintai and Hu, Yaojun and Wang, Yue and Lu, Yingzhou and Cao, Xu and Lin, Miao and Xu, Hongxia and Wu, Jian and Xiao, Cao and Sun, Jimeng and others},
@@ -93,4 +102,3 @@ If you use this work in your research or projects, please cite it as follows:
   year={2024}
 }
 ```
-
