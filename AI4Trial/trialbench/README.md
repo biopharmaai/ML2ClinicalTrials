@@ -1,4 +1,3 @@
-
 # TrialBench: Multi-modal AI-ready Clinical Trial Datasets
 
 [![PyPI version](https://pypi-camo.freetls.fastly.net/1084b9f2f9dfb3ed603718f4160bbbce019cb759/68747470733a2f2f696d672e736869656c64732e696f2f707970692f762f747269616c62656e63682e7376673f636f6c6f723d627269676874677265656e)](https://pypi.org/project/trialbench/)
@@ -12,15 +11,15 @@ pip install trialbench
 
 ## 2. Tasks & Phases
 
-| Supported Tasks | Task Name | Phase Name |
-|----------------|-----------|------------|
-| Mortality Prediction | `mortality_rate`/`mortality_rate_yn` | 1-4 |
-| Adverse Event Prediction | `serious_adverse_rate`/`serious_adverse_rate_yn` | 1-4 |
-| Patient Retention Prediction | `patient_dropout_rate`/`patient_dropout_rate_yn` | 1-4 |
-| Trial Duration Prediction | `duration` | 1-4 |
-| Trial Outcome Prediction | `outcome` | 1-4 |
-| Trial Failure Analysis | `failure_reason` | 1-4 |
-| Dosage Prediction | `dose`/`dose_cls` | All |
+| Supported Tasks              | Task Name                                            | Phase Name |
+| ---------------------------- | ---------------------------------------------------- | ---------- |
+| Mortality Prediction         | `mortality_rate`/`mortality_rate_yn`             | 1-4        |
+| Adverse Event Prediction     | `serious_adverse_rate`/`serious_adverse_rate_yn` | 1-4        |
+| Patient Retention Prediction | `patient_dropout_rate`/`patient_dropout_rate_yn` | 1-4        |
+| Trial Duration Prediction    | `duration`                                         | 1-4        |
+| Trial Outcome Prediction     | `outcome`                                          | 1-4        |
+| Trial Failure Analysis       | `failure_reason`                                   | 1-4        |
+| Dosage Prediction            | `dose`/`dose_cls`                                | All        |
 
 ### Clinical Trial Phases
 
@@ -38,17 +37,17 @@ Phase 4: Post-marketing Surveillance
 ```python
 import trialbench
 
-Download all datasets at once (optional)
+# Download all datasets at once (optional)
 save_path = 'data/'
 trialbench.function.download_all_data(save_path)
 
-Load dataset
+# Load dataset
 task = 'dose'
 phase = 'All'
 
-Load dataloader.Dataloader 
+# Load dataloader.Dataloader 
 train_loader, valid_loader, test_loader, num_classes, tabular_input_dim = trialbench.function.load_data(task, phase, data_format='dl')
-or Load pd.Dataframe
+# or Load pd.Dataframe
 train_df, valid_df, test_df, num_classes, tabular_input_dim = trialbench.function.load_data(task, phase, data_format='df')
 ```
 
@@ -59,25 +58,25 @@ Each task provides different feature sets. The Dosage Prediction task returns `n
 All tasks use `label_lst` as the label variable. Please refer to the guide documentation for detailed feature as well as label descriptions.
 
 ```python
-Demo for accessing data elements
+# Demo for accessing data elements
 task = 'dose'
 phase = 'All'
 
-When using DataLoader objects:
-Features
+# When using DataLoader objects:
+# Features
 nctid_list = train_loader.dataset.nctid_lst
 smiles_list = train_loader.dataset.smiles_lst
 mesh_list = train_loader.dataset.mesh_lst
-Labels
-return [datatset_name, label_max, label_min, label_avg], e.g. ['NCT03422510', 2, 2, 2]
+# Labels
+# return [datatset_name, label_max, label_min, label_avg], e.g. ['NCT03422510', 2, 2, 2]
 label_list = train_loader.dataset.label_lst 
 
-When using DataFrames:
-Features
+# When using DataFrames:
+# Features
 nctid_list = train_df.nctid_lst
 smiles_list = train_df.smiles_lst
 mesh_list = train_df.mesh_lst
-Labels
+# Labels
 label_list = train_df.label_lst
 ```
 
@@ -85,11 +84,11 @@ label_list = train_df.label_lst
 
 ### `load_data` Parameters
 
-| Parameter | Type | Description |
-|-----------|------|-------------|
-| `task` | str | Target prediction task (e.g., 'mortality_rate_yn') |
-| `phase` | int | Clinical trial phase (1-4) |
-| `data_format` | str | Data format ('dl' for Dataloader, 'df' for pd.DataFrame) |
+| Parameter       | Type | Description                                              |
+| --------------- | ---- | -------------------------------------------------------- |
+| `task`        | str  | Target prediction task (e.g., 'mortality_rate_yn')       |
+| `phase`       | int  | Clinical trial phase (1-4)                               |
+| `data_format` | str  | Data format ('dl' for Dataloader, 'df' for pd.DataFrame) |
 
 ## 5. Citation
 
