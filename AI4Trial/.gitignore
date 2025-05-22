@@ -1,9 +1,0 @@
-__pycache__/
-*.pyc
-*.log
-trialbench/requirements.txt
-*.egg-info/
-arxiv/
-build/
-dist/
-data/mesh-embeddings/mesh_embeddings.txt.gz
