@@ -28,17 +28,3 @@ This repository offers:
 
 If you encounter any issues or have questions, please open an issue on [GitHub](https://github.com/ML2Health/ML2ClinicalTrials/issues). For additional help, feel free to reach out to our team.
 
-
-## 📢 Citation
-
-If you use this work in your research or projects, please cite it as follows:
-
-```
-@article{chen2024trialbench,
-  title={Trialbench: Multi-modal artificial intelligence-ready clinical trial datasets},
-  author={Chen, Jintai and Hu, Yaojun and Wang, Yue and Lu, Yingzhou and Cao, Xu and Lin, Miao and Xu, Hongxia and Wu, Jian and Xiao, Cao and Sun, Jimeng and others},
-  journal={arXiv preprint arXiv:2407.00631},
-  year={2024}
-}
-```
-
