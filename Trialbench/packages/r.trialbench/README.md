@@ -6,7 +6,7 @@
 
 ### 1.1 Download R package
 
-Please download `r.trialbench_0.0.0.9000.tar.gz` from [here](https://github.com/ML2Health/ML2ClinicalTrials/blob/main/TrialBench/packages/r.trialbench_0.0.0.9000.tar.gz). After downloading the R package, decompress it:
+Please download `r.trialbench_0.0.0.9000.tar.gz` from [here](https://github.com/ML2Health/ML2ClinicalTrials/raw/refs/heads/main/Trialbench/packages/r.trialbench_0.0.0.9000.tar.gz). After downloading the R package, decompress it:
 
 ```bash
 tar -xzvf r.trialbench_0.0.0.9000.tar.gz
@@ -24,7 +24,7 @@ reticulate::py_install("trialbench", pip = TRUE)
 
 ### 1.3 Manully Download  `mesh_embeddings.txt.gz` File
 
-Due to the package size limitation, please download `mesh_embeddings.txt.gz` from [here](https://github.com/ML2Health/ML2ClinicalTrials/blob/main/TrialBench/data/mesh-embeddings/mesh_embeddings.txt.gz). Then copy it to your `trialbench` path as
+Due to the package size limitation, please download `mesh_embeddings.txt.gz` from [here](https://github.com/ML2Health/ML2ClinicalTrials/raw/refs/heads/main/Trialbench/data/mesh-embeddings/mesh_embeddings.txt.gz). Then copy it to your `trialbench` path as
 
 ```bash
 cp mesh_embeddings.txt.gz your_path_to/miniconda3/envs/r_trialbench/lib/python3.10/site-packages/trialbench/data/mesh-embeddings/

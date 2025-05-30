@@ -12,7 +12,7 @@ pip install trialbench
 
 ### 1.2 Manully Download  `mesh_embeddings.txt.gz` File
 
-Due to the package size limitation, please download `mesh_embeddings.txt.gz` from [here](https://github.com/ML2Health/ML2ClinicalTrials/blob/main/AI4Trial/data/mesh-embeddings/mesh_embeddings.txt.gz). Then copy it to your `trialbench` path as
+Due to the package size limitation, please download `mesh_embeddings.txt.gz` from [here](https://github.com/ML2Health/ML2ClinicalTrials/raw/refs/heads/main/Trialbench/data/mesh-embeddings/mesh_embeddings.txt.gz). Then copy it to your `trialbench` path as
 
 ```bash
 cp mesh_embeddings.txt.gz your_path_to/miniconda3/envs/trialbench/lib/python3.10/site-packages/trialbench/data/mesh-embeddings/
