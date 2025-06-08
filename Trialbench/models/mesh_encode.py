@@ -9,14 +9,14 @@ from torch import nn
 import torch.nn.functional as F
 
 def get_mesh_term_embedding():
-    with open('../data/mesh-embeddings/mesh_ui_to_id.pickle', 'rb') as stream:
+    with open('data/mesh-embeddings/mesh_ui_to_id.pickle', 'rb') as stream:
         mesh_ui_to_id = pickle.load(stream)
 
-    with open('../data/mesh-embeddings/term_to_ui.pkl', 'rb') as stream:
+    with open('data/mesh-embeddings/term_to_ui.pkl', 'rb') as stream:
         term2ui = pickle.load(stream)
                 
     embeddings = {}
-    with gzip.open('../data/mesh-embeddings/mesh_embeddings.txt.gz', 'rt') as stream:
+    with gzip.open('data/mesh-embeddings/mesh_embeddings.txt.gz', 'rt') as stream:
         n_embeddings, embedding_dim = stream.readline().strip().split()
         for line in stream:
             splitline = str(line).strip().split()

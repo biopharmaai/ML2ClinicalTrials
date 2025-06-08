@@ -30,7 +30,7 @@ def clean_text(text):
     return ''.join(text_split)
 
 def get_all_texts():
-    input_file = '../data/All_data.csv'
+    input_file = 'data/All_data.csv'
     text_feature = ['brief_title', 'brief_summary', 'detailed_description', 'eligibility/study_pop/textblock', 'intervention/description',
     'keyword', 'study_design_info/intervention_model_description', 'study_design_info/masking_description', 'condition', ]
     raw_data = pd.read_csv(input_file)
@@ -43,7 +43,7 @@ def get_all_texts():
     return set(texts)
 
 def get_column_texts(c):
-    input_file = '../data/All_data.csv'
+    input_file = 'data/All_data.csv'
     raw_data = pd.read_csv(input_file).loc[:, [c]]
     texts = raw_data[c].apply(clean_text).dropna()
     texts = texts.tolist()
@@ -53,7 +53,7 @@ def get_column_texts(c):
 def save_sentence_bert_dict_pkl_c(c):
     cleaned_sentence_set = get_column_texts(c) 
     from biobert_embedding.embedding import BiobertEmbedding
-    biobert = BiobertEmbedding(model_path = '../data/Bio_ClinaBert/')
+    biobert = BiobertEmbedding(model_path = 'data/Bio_ClinaBert/')
     def text2vec(text):
         return biobert.sentence_vector(text)
     text_sentence_2_embedding = dict()
@@ -62,13 +62,13 @@ def save_sentence_bert_dict_pkl_c(c):
             text_sentence_2_embedding[sentence] = text2vec(sentence)
         except:
             continue
-    pickle.dump(text_sentence_2_embedding, open(f'../data/{c}_sentences2embedding.pkl', 'wb'))
+    pickle.dump(text_sentence_2_embedding, open(f'data/{c}_sentence2embedding.pkl', 'wb'))
     return
 
 def save_sentence_bert_dict_pkl():
     cleaned_sentence_set = get_all_texts() 
     from biobert_embedding.embedding import BiobertEmbedding
-    biobert = BiobertEmbedding(model_path = '../data/Bio_ClinaBert/')
+    biobert = BiobertEmbedding(model_path = 'data/Bio_ClinaBert/')
     def text2vec(text):
         return biobert.sentence_vector(text)
     text_sentence_2_embedding = dict()
@@ -77,11 +77,11 @@ def save_sentence_bert_dict_pkl():
             text_sentence_2_embedding[sentence] = text2vec(sentence)
         except:
             continue
-    pickle.dump(text_sentence_2_embedding, open('../data/sentences2embedding.pkl', 'wb'))
+    pickle.dump(text_sentence_2_embedding, open('data/sentence2embedding.pkl', 'wb'))
     return 
 
 def load_sentence_2_vec():
-    sentence_2_vec = pickle.load(open('../data/sentences2embedding.pkl', 'rb'))
+    sentence_2_vec = pickle.load(open('data/sentence2embedding.pkl', 'rb'))
     return sentence_2_vec 
 
 def text2feature(text_lst):
@@ -124,7 +124,7 @@ class Text_Embedding(nn.Sequential):
 if __name__ == "__main__":
     # texts = get_all_texts()
     # split_texts(texts)
-    input_file = '../data/All_data.csv'
+    input_file = 'data/All_data.csv'
     text_feature = ['brief_title', 'brief_summary', 'detailed_description', 'eligibility/study_pop/textblock', 'intervention/description',
     'keyword', 'study_design_info/intervention_model_description', 'study_design_info/masking_description', 'condition', ]
     with open(input_file, 'r') as csvfile:

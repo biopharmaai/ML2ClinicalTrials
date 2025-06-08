@@ -1,7 +1,8 @@
 from scipy.stats import pearsonr
 from sklearn.metrics import (
     roc_auc_score, f1_score, average_precision_score, precision_score, auc,
-    recall_score, accuracy_score, mean_absolute_error, mean_squared_error)
+    recall_score, accuracy_score, mean_absolute_error, mean_squared_error,
+    confusion_matrix)
 from sklearn.preprocessing import OneHotEncoder
 import matplotlib.pyplot as plt
 from copy import deepcopy 
@@ -13,7 +14,6 @@ from torch import nn
 from torch.autograd import Variable
 import torch.nn.functional as F
 from models.module import Highway, GCN 
-# from DANet.model.TrialDANet import TrialDANet
 from functools import reduce 
 import pickle
 
@@ -23,7 +23,29 @@ def print2file(file_name, *content):
         fout.write(content + '\n')
     print(content)
 
+def specificity_score(y_true, y_pred, labels=None):
+    """
+    One-vs-rest specificity score for binary or multi-class classification.
 
+    Args:
+        y_true: list or np.array of ground truth labels
+        y_pred: list or np.array of predicted labels
+        labels: optional, list of label names in case of multi-class
+    """
+    cm = confusion_matrix(y_true, y_pred, labels=labels)
+    if cm.shape[0] == 2:  # Binary classification
+        tn, fp, fn, tp = cm.ravel()
+        specificity = tn / (tn + fp + 1e-10)
+    else:  # Multi-class
+        specificity = 0.0
+        for i in range(len(cm)):
+            tp = cm[i, i]
+            fn = np.sum(cm[i, :]) - tp
+            fp = np.sum(cm[:, i]) - tp
+            tn = np.sum(cm) - tp - fn - fp
+            specificity += tn / (tn + fp + 1e-10)
+        specificity /= cm.shape[0]  # Average specificity across classes
+    return specificity
 
 class Interaction(nn.Sequential):
     def __init__(self, molecule_encoder, disease_encoder, protocol_encoder, tabular_encoder, text_encoder, mesh_encoder,
@@ -86,7 +108,6 @@ class Interaction(nn.Sequential):
 
     def forward_encoder_2_interaction(self, molecule_embed, icd_embed, protocol_embed, tabular_embed, text_embed, mesh_embed):
         encoder_embedding = torch.cat([molecule_embed, icd_embed, protocol_embed, tabular_embed, text_embed, mesh_embed], 1)
-        # interaction_embedding = self.feed_lst_of_module(encoder_embedding, [self.encoder2interaction_fc, self.encoder2interaction_highway])
         h = self.encoder2interaction_fc(encoder_embedding)
         h = self.f(h)
         h = self.encoder2interaction_highway(h)
@@ -126,13 +147,11 @@ class Interaction(nn.Sequential):
             predict_all = list(map(float2binary, predict_all))
             f1score = f1_score(label_all, predict_all)
             prauc_score = average_precision_score(label_all, predict_all)
-            # print(predict_all)
             precision = precision_score(label_all, predict_all, zero_division=0.0)
             recall = recall_score(label_all, predict_all)
             accuracy = accuracy_score(label_all, predict_all)
-            predict_1_ratio = sum(predict_all) / len(predict_all)
-            label_1_ratio = sum(label_all) / len(label_all)
-            return auc_score, f1score, prauc_score, precision, recall, accuracy, predict_1_ratio, label_1_ratio 
+            specificity = specificity_score(label_all, predict_all)
+            return auc_score, f1score, prauc_score, precision, recall, accuracy, specificity 
 
         elif self.num_classes > 1:
             predict_all_x = np.max(predict_all, axis=1, keepdims=True)
@@ -149,21 +168,19 @@ class Interaction(nn.Sequential):
 
             encoder = OneHotEncoder(sparse_output=False)
             one_hot_labels = encoder.fit_transform(np.array(label_all).reshape(-1, 1))
-            # print("One-hot encoded labels:")
-            # print(one_hot_labels)
+
             pr_aucs = []
             for i in range(predict_all.shape[1]):
                 prec, recal, _ = precision_recall_curve(one_hot_labels[:, i],predict_all[:, i])
                 pr_auc = auc(recal, prec)
                 pr_aucs.append(pr_auc)
             prauc_score = np.mean(pr_aucs)
-            
-            predict_1_ratio = 0#sum(label_all) / len(predict_cls)  # no sense
-            label_1_ratio = 0# sum(label_all) / len(label_cls) # no sense
 
-            return auc_score, f1score, prauc_score, precision, recall, accuracy, predict_1_ratio, label_1_ratio 
-            # print(predict_all)
+            specificity = specificity_score(label_all, predict_cls, labels=encoder.categories_[0])
+            return auc_score, f1score, prauc_score, precision, recall, accuracy, specificity
+
         elif self.num_classes == 0:
+            # Regression task
             mae = mean_absolute_error(label_all, predict_all)
             mse = mean_squared_error(label_all, predict_all)
             correlation, p_value = pearsonr(label_all, predict_all)
@@ -212,11 +229,11 @@ class Interaction(nn.Sequential):
         self.eval()
         best_threshold = 0.5 
         whole_loss, predict_all, label_all, nctid_all = self.generate_predict(dataloader)
-        from HINT.utils import plot_hist
-        plt.clf()
-        prefix_name = self.save_name.replace('logs/', 'logs/figure/') 
-        os.makedirs(prefix_name, exist_ok=True)
-        plot_hist(prefix_name, predict_all, label_all)		
+        # from HINT.utils import plot_hist
+        # plt.clf()
+        # prefix_name = self.save_name.replace('logs/', 'logs/figure/') 
+        # os.makedirs(prefix_name, exist_ok=True)
+        # plot_hist(prefix_name, predict_all, label_all)		
         def bootstrap(length, sample_num):
             idx = [i for i in range(length)]
             from random import choices 
@@ -237,6 +254,7 @@ class Interaction(nn.Sequential):
             precision = [results[3] for results in results_lst]
             recall = [results[4] for results in results_lst]
             accuracy = [results[5] for results in results_lst]
+            specificity = [results[6] for results in results_lst]
             print2file(self.save_name+'.txt', "==================Bootstrap Test==================")
             print2file(self.save_name+'.txt',  "PR-AUC   mean: "+str(np.mean(prauc_score))[:6], "std: "+str(np.std(prauc_score))[:6])
             print2file(self.save_name+'.txt',  "F1       mean: "+str(np.mean(f1score))[:6], "std: "+str(np.std(f1score))[:6])
@@ -244,6 +262,7 @@ class Interaction(nn.Sequential):
             print2file(self.save_name+'.txt',  "Precision mean: "+str(np.mean(precision))[:6], "std: "+str(np.std(precision))[:6])
             print2file(self.save_name+'.txt',  "Recall   mean: "+str(np.mean(recall))[:6], "std: "+str(np.std(recall))[:6])
             print2file(self.save_name+'.txt',  "Accuracy mean: "+str(np.mean(accuracy))[:6], "std: "+str(np.std(accuracy))[:6])
+            print2file(self.save_name+'.txt',  "Specificity mean: "+str(np.mean(specificity))[:6], "std: "+str(np.std(specificity))[:6])
         else:
             mae = [results[0] for results in results_lst]
             mse = [results[1] for results in results_lst]
@@ -288,7 +307,7 @@ class Interaction(nn.Sequential):
             print_num = 5
             results_lst = self.evaluation(predict_all, label_all, threshold = best_threshold)
             if self.num_classes > 0:
-                auc, f1score, prauc_score, precision, recall, accuracy, predict_1_ratio, label_1_ratio = results_lst
+                auc, f1score, prauc_score, precision, recall, accuracy, specificity = results_lst
                 print2file(self.save_name+'.txt', "==================Test==================")
                 print2file(self.save_name+'.txt',  "PR-AUC   mean: "+str(prauc_score)[:6])
                 print2file(self.save_name+'.txt',  "F1       mean: "+str(f1score)[:6])
@@ -296,6 +315,7 @@ class Interaction(nn.Sequential):
                 print2file(self.save_name+'.txt',  "Precision mean: "+str(precision)[:6])
                 print2file(self.save_name+'.txt',  "Recall   mean: "+str(recall)[:6])
                 print2file(self.save_name+'.txt',  "Accuracy mean: "+str(accuracy)[:6])
+                print2file(self.save_name+'.txt',  "Specificity mean: "+str(specificity)[:6])
             else:
                 mae, mse, rmse, correlation, p_value = results_lst
                 print2file(self.save_name+'.txt', "==================Test==================")
@@ -590,17 +610,15 @@ class Multi_2_head(Interaction):
             cls_predict_all = list(map(float2binary, cls_predict_all))
             f1score = f1_score(cls_label_all, cls_predict_all)
             prauc_score = average_precision_score(cls_label_all, cls_predict_all)
-            # print(predict_all)
             precision = precision_score(cls_label_all, cls_predict_all, zero_division=0.0)
             recall = recall_score(cls_label_all, cls_predict_all)
             accuracy = accuracy_score(cls_label_all, cls_predict_all)
-            predict_1_ratio = sum(cls_predict_all) / len(cls_predict_all)
-            label_1_ratio = sum(cls_label_all) / len(cls_label_all)
+            specificity = specificity_score(cls_label_all, cls_predict_all)
             mae = mean_absolute_error(reg_label_all, reg_predict_all)
             mse = mean_squared_error(reg_label_all, reg_predict_all)
             correlation, p_value = pearsonr(reg_label_all, reg_predict_all)
             rmse = np.sqrt(mse)
-            return auc_score, f1score, prauc_score, precision, recall, accuracy, predict_1_ratio, label_1_ratio, mae, mse, rmse, correlation, p_value
+            return auc_score, f1score, prauc_score, precision, recall, accuracy, specificity, mae, mse, rmse, correlation, p_value
 
     def generate_predict(self, dataloader):
         '''
@@ -644,7 +662,7 @@ class Multi_2_head(Interaction):
             print_num = 5
             results_lst = self.evaluation(predict_all, label_all, threshold = best_threshold)
             if self.num_classes > 0:
-                auc, f1score, prauc_score, precision, recall, accuracy, predict_1_ratio, label_1_ratio, mae, mse, rmse, correlation, p_value = results_lst
+                auc, f1score, prauc_score, precision, recall, accuracy, specificity, mae, mse, rmse, correlation, p_value = results_lst
                 print2file(self.save_name+'.txt', "==================Test==================")
                 print2file(self.save_name+'.txt',  "PR-AUC   mean: "+str(prauc_score)[:6])
                 print2file(self.save_name+'.txt',  "F1       mean: "+str(f1score)[:6])
@@ -652,6 +670,7 @@ class Multi_2_head(Interaction):
                 print2file(self.save_name+'.txt',  "Precision mean: "+str(precision)[:6])
                 print2file(self.save_name+'.txt',  "Recall   mean: "+str(recall)[:6])
                 print2file(self.save_name+'.txt',  "Accuracy mean: "+str(accuracy)[:6])
+                print2file(self.save_name+'.txt',  "Specificity mean: "+str(specificity)[:6])
                 print2file(self.save_name+'.txt',  "MAE      mean: "+str(mae)[:6])
                 print2file(self.save_name+'.txt',  "MSE      mean: "+str(mse)[:6])
                 print2file(self.save_name+'.txt',  "RMSE     mean: "+str(rmse)[:6])
@@ -668,11 +687,11 @@ class Multi_2_head(Interaction):
         reg_label_all = [i[0] for i in label_all]
         cls_predict_all = [i[1] for i in predict_all]
         cls_label_all = [i[1] for i in label_all]
-        from HINT.utils import plot_hist
-        plt.clf()
-        prefix_name = self.save_name.replace('logs/', 'logs/figure/') 
-        os.makedirs(prefix_name, exist_ok=True)
-        plot_hist(prefix_name, cls_predict_all, cls_label_all)		
+        # from HINT.utils import plot_hist
+        # plt.clf()
+        # prefix_name = self.save_name.replace('logs/', 'logs/figure/') 
+        # os.makedirs(prefix_name, exist_ok=True)
+        # plot_hist(prefix_name, cls_predict_all, cls_label_all)		
         def bootstrap(length, sample_num):
             idx = [i for i in range(length)]
             from random import choices 
@@ -693,6 +712,7 @@ class Multi_2_head(Interaction):
             precision = [results[3] for results in results_lst]
             recall = [results[4] for results in results_lst]
             accuracy = [results[5] for results in results_lst]
+            specificity = [results[6] for results in results_lst]
             print2file(self.save_name+'.txt', "==================Bootstrap Test==================")
             print2file(self.save_name+'.txt',  "PR-AUC   mean: "+str(np.mean(prauc_score))[:6], "std: "+str(np.std(prauc_score))[:6])
             print2file(self.save_name+'.txt',  "F1       mean: "+str(np.mean(f1score))[:6], "std: "+str(np.std(f1score))[:6])
@@ -700,10 +720,11 @@ class Multi_2_head(Interaction):
             print2file(self.save_name+'.txt',  "Precision mean: "+str(np.mean(precision))[:6], "std: "+str(np.std(precision))[:6])
             print2file(self.save_name+'.txt',  "Recall   mean: "+str(np.mean(recall))[:6], "std: "+str(np.std(recall))[:6])
             print2file(self.save_name+'.txt',  "Accuracy mean: "+str(np.mean(accuracy))[:6], "std: "+str(np.std(accuracy))[:6])
-            mae = [results[8] for results in results_lst]
-            mse = [results[9] for results in results_lst]
-            rmse = [results[10] for results in results_lst]
-            correlation = [results[11] for results in results_lst]
+            print2file(self.save_name+'.txt',  "Specificity mean: "+str(np.mean(specificity))[:6], "std: "+str(np.std(specificity))[:6])
+            mae = [results[7] for results in results_lst]
+            mse = [results[8] for results in results_lst]
+            rmse = [results[9] for results in results_lst]
+            correlation = [results[10] for results in results_lst]
             print2file(self.save_name+'.txt', "==================Bootstrap Test==================")
             print2file(self.save_name+'.txt',  "MAE      mean: "+str(np.mean(mae))[:6], "std: "+str(np.std(mae))[:6])
             print2file(self.save_name+'.txt',  "MSE      mean: "+str(np.mean(mse))[:6], "std: "+str(np.std(mse))[:6])
@@ -878,7 +899,7 @@ class Dose(nn.Sequential):
             precision = precision_score(label_all, predict_cls, average="macro", zero_division=0.0)
             recall = recall_score(label_all, predict_cls, average="macro")
             accuracy = accuracy_score(label_all, predict_cls)
-
+            specificity = specificity_score(label_all, predict_cls)
             cindex = self.concordance_index_for_ranking(label_all, predict_cls)
 
             encoder = OneHotEncoder(sparse_output=False)
@@ -891,11 +912,8 @@ class Dose(nn.Sequential):
                 pr_auc = auc(recal, prec)
                 pr_aucs.append(pr_auc)
             prauc_score = np.mean(pr_aucs)
-            
-            predict_1_ratio = 0#sum(label_all) / len(predict_cls)  # no sense
-            label_1_ratio = 0# sum(label_all) / len(label_cls) # no sense
 
-            return auc_score, f1score, prauc_score, precision, recall, accuracy, cindex, predict_1_ratio, label_1_ratio 
+            return auc_score, f1score, prauc_score, precision, recall, accuracy, cindex, specificity
 
         elif self.num_classes == 2:
             predict_all = np.array(predict_all)
@@ -964,12 +982,12 @@ class Dose(nn.Sequential):
         self.eval()
         best_threshold = 0.5 
         whole_loss, predict_all, label_all, nctid_all = self.generate_predict(dataloader)
-        from HINT.utils import plot_hist
-        plt.clf()
-        prefix_name = self.save_name.replace('logs/', 'logs/figure/') 
-        os.makedirs(prefix_name, exist_ok=True)
-        if self.num_classes == 4:
-            plot_hist(prefix_name, predict_all, label_all)		
+        # from HINT.utils import plot_hist
+        # plt.clf()
+        # prefix_name = self.save_name.replace('logs/', 'logs/figure/') 
+        # os.makedirs(prefix_name, exist_ok=True)
+        # if self.num_classes == 4:
+        #     plot_hist(prefix_name, predict_all, label_all)		
             
         def bootstrap(length, sample_num):
             idx = [i for i in range(length)]
@@ -992,6 +1010,7 @@ class Dose(nn.Sequential):
             recall = [results[4] for results in results_lst]
             accuracy = [results[5] for results in results_lst]
             cindex = [results[6] for results in results_lst]
+            specificity_score = [results[7] for results in results_lst]
             print2file(self.save_name+'.txt', "==================Bootstrap Test==================")
             print2file(self.save_name+'.txt',  "PR-AUC   mean: "+str(np.mean(prauc_score))[:6], "std: "+str(np.std(prauc_score))[:6])
             print2file(self.save_name+'.txt',  "F1       mean: "+str(np.mean(f1score))[:6], "std: "+str(np.std(f1score))[:6])
@@ -999,6 +1018,7 @@ class Dose(nn.Sequential):
             print2file(self.save_name+'.txt',  "Precision mean: "+str(np.mean(precision))[:6], "std: "+str(np.std(precision))[:6])
             print2file(self.save_name+'.txt',  "Recall   mean: "+str(np.mean(recall))[:6], "std: "+str(np.std(recall))[:6])
             print2file(self.save_name+'.txt',  "Accuracy mean: "+str(np.mean(accuracy))[:6], "std: "+str(np.std(accuracy))[:6])
+            print2file(self.save_name+'.txt',  "Specificity mean: "+str(np.mean(specificity_score))[:6], "std: "+str(np.std(specificity_score))[:6])
             print2file(self.save_name+'.txt',  "C-index  mean: "+str(np.mean(cindex))[:6], "std: "+str(np.std(cindex))[:6])
         elif self.num_classes == 2:
             coverage = [results for results in results_lst]
@@ -1048,7 +1068,7 @@ class Dose(nn.Sequential):
             print_num = 5
             results_lst = self.evaluation(predict_all, label_all, threshold = best_threshold)
             if self.num_classes == 4:
-                auc, f1score, prauc_score, precision, recall, accuracy, cindex, predict_1_ratio, label_1_ratio = results_lst
+                auc, f1score, prauc_score, precision, recall, accuracy, cindex, specificity = results_lst
                 print2file(self.save_name+'.txt', "==================Test==================")
                 print2file(self.save_name+'.txt',  "PR-AUC   mean: "+str(prauc_score)[:6])
                 print2file(self.save_name+'.txt',  "F1       mean: "+str(f1score)[:6])
@@ -1056,6 +1076,7 @@ class Dose(nn.Sequential):
                 print2file(self.save_name+'.txt',  "Precision mean: "+str(precision)[:6])
                 print2file(self.save_name+'.txt',  "Recall   mean: "+str(recall)[:6])
                 print2file(self.save_name+'.txt',  "Accuracy mean: "+str(accuracy)[:6])
+                print2file(self.save_name+'.txt',  "Specificity mean: "+str(specificity)[:6])
                 print2file(self.save_name+'.txt',  "C-index  mean: "+str(cindex)[:6])
             elif self.num_classes == 2:
                 coverage = results_lst

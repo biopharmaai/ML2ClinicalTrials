@@ -19,7 +19,7 @@ pip install -r requirements.txt
 All necessary supporting documents can be downloaded from this [link](https://drive.google.com/drive/folders/1fp350IUj284EnTHVgSWtq9qIq0Mlbjg9?usp=sharing). Place them into the `data/` folder.
 
 ## 📚 Trialbench
-For quick exploration, toy samples are available in [Trialbench](https://github.com/ML2Health/ML2ClinicalTrials/tree/main/TrialBench/data). You can also [Download All Data](https://zenodo.org/records/15455785/files/all_task.zip?download=1) at once.
+For quick exploration, toy samples are available in [Trialbench](https://github.com/ML2Health/ML2ClinicalTrials/tree/main/Trialbench/data). You can also [Download All Data](https://zenodo.org/records/15455785/files/all_task.zip?download=1) at once.
 
 #### Sub-Task Datasets
 
@@ -39,7 +39,6 @@ Here’s a refined and expanded Usage section with a clear explanation of base_n
 To run an experiment for mortality rate prediction, navigate to the `AI4Trial` directory and execute:
 
 ```bash
-cd AI4Trial
 python learn_multi_model.py --base_name mortality_rate --phase 'Phase1' --exp Temp
 ```
 #### Configurable Parameters
@@ -60,7 +59,7 @@ The base_name parameter determines which dataset and task to use. Below are the 
 | serious_adverse_rate       | Serious adverse event forecasting                     |
 | patient_dropout_rate       | Patient dropout event forecasting                     |
 | duration                   | Trial duration forecasting                            |
-| outcome                    | Trial outcome prediction                              |
+| outcome                    | Trial approval prediction                             |
 | failure_reason             | Trial failure reason identification                   |
 | serious_adverse_rate_yn    | Binary classification for serious adverse events      |
 | patient_dropout_rate_yn    | Binary classification for patient dropout events      |

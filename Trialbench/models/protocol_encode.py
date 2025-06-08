@@ -72,11 +72,11 @@ def save_sentence_bert_dict_pkl():
 	protocol_sentence_2_embedding = dict()
 	for sentence in tqdm(cleaned_sentence_set):
 		protocol_sentence_2_embedding[sentence] = text2vec(sentence)
-	pickle.dump(protocol_sentence_2_embedding, open('../data/sentence2embedding.pkl', 'wb'))
+	pickle.dump(protocol_sentence_2_embedding, open('data/sentence2embedding.pkl', 'wb'))
 	return 
 
 def load_sentence_2_vec():
-	sentence_2_vec = pickle.load(open('../data/sentence2embedding.pkl', 'rb'))
+	sentence_2_vec = pickle.load(open('data/sentence2embedding.pkl', 'rb'))
 	return sentence_2_vec 
 
 def protocol2feature(protocol, sentence_2_vec):

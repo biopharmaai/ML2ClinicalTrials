@@ -65,31 +65,38 @@ def Read_from_csv(target, phase):
         rootdir = "data/serious-adverse-event-forecasting"
     elif "patient_dropout_rate" in target:
         rootdir = "data/patient-dropout-event-forecasting"
-    elif target == "duration":
+    elif "duration" in target:
         rootdir = "data/trial-duration-forecasting"
-    elif target == "outcome":
+    elif "approval" in target:
         rootdir = "data/trial-approval-forecasting"
-    elif target == "failure_reason":
+    elif "failure_reason" in target:
         rootdir = "data/trial-failure-reason-identification"
     elif "dose" in target:
         rootdir = "data/drug-dose-prediction"
-
-    phase = "all" if phase is None else phase
-    if phase == "all":
+        X_train_path = os.path.join(rootdir, "All", "train_x.csv")
+        y_train_path = os.path.join(rootdir, "All", "train_y_cls.csv")
+        X_test_path = os.path.join(rootdir, "All", "test_x.csv")
+        y_test_path = os.path.join(rootdir, "All", "test_y_cls.csv")
+        X_train = pd.read_csv(X_train_path, index_col=0)
+        y_train = pd.read_csv(y_train_path, index_col=0)
+        X_test = pd.read_csv(X_test_path, index_col=0)
+        y_test = pd.read_csv(y_test_path, index_col=0)
+        return X_train, y_train, X_test, y_test
+    else:
+        raise ValueError("Unknown target: {}".format(target))
+    
+    phase = "All" if phase is None else phase
+    if phase == "All":
         X_train, y_train, X_test, y_test = [], [], [], []
         for phase in os.listdir(rootdir):
             X_train_path = os.path.join(rootdir, phase, "train_x.csv")
             y_train_path = os.path.join(rootdir, phase, "train_y.csv")
             X_test_path = os.path.join(rootdir, phase, "test_x.csv")
             y_test_path = os.path.join(rootdir, phase, "test_y.csv")
-            if not os.path.exists(y_train_path):
-                y_train_path = os.path.join(rootdir, phase, "train_y_cls.csv")
-            if not os.path.exists(y_test_path):
-                y_test_path = os.path.join(rootdir, phase, "test_y_cls.csv")
-            X_train.append(pd.read_csv(X_train_path))
-            y_train.append(pd.read_csv(y_train_path))
-            X_test.append(pd.read_csv(X_test_path))
-            y_test.append(pd.read_csv(y_test_path))
+            X_train.append(pd.read_csv(X_train_path, index_col=0))
+            y_train.append(pd.read_csv(y_train_path, index_col=0))
+            X_test.append(pd.read_csv(X_test_path, index_col=0))
+            y_test.append(pd.read_csv(y_test_path, index_col=0))
 
         X_train = pd.concat(X_train, axis=0)
         y_train = pd.concat(y_train, axis=0)
@@ -100,15 +107,16 @@ def Read_from_csv(target, phase):
         y_train_path = os.path.join(rootdir, phase, "train_y.csv")
         X_test_path = os.path.join(rootdir, phase, "test_x.csv")
         y_test_path = os.path.join(rootdir, phase, "test_y.csv")
-        X_train = pd.read_csv(X_train_path)
-        y_train = pd.read_csv(y_train_path)
-        X_test = pd.read_csv(X_test_path)
-        y_test = pd.read_csv(y_test_path)
+        X_train = pd.read_csv(X_train_path, index_col=0)
+        y_train = pd.read_csv(y_train_path, index_col=0)
+        X_test = pd.read_csv(X_test_path, index_col=0)
+        y_test = pd.read_csv(y_test_path, index_col=0)
 
-    if "nctid" not in X_train.columns:
-        X_train.rename(columns={"ntcid": "nctid"}, inplace=True)
-        X_test.rename(columns={"ntcid": "nctid"}, inplace=True)
-    print(X_train.columns)
+    # if "nctid" not in X_train.columns:
+    #     X_train.rename(columns={"ntcid": "nctid"}, inplace=True)
+    #     X_test.rename(columns={"ntcid": "nctid"}, inplace=True)
+    y_train = y_train.loc[X_train.index]
+    y_test = y_test.loc[X_test.index]
     return X_train, y_train, X_test, y_test
 
 

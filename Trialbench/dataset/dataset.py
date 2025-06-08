@@ -157,7 +157,7 @@ def quantile_transform(X_train, X_valid, X_test):
 
 
 def mortality_rate(phase):
-    target = "mortality-rate-prediction"
+    target = "mortality_rate"
     X_train, y_train, X_test, y_test = Read_from_csv(target, phase)
 
     # Randomly split the training set into a validation set
@@ -365,7 +365,7 @@ def mortality_rate(phase):
 
 
 def mortality_rate_yn(phase):
-    target = "mortality-rate-prediction"
+    target = "mortality_rate_yn"
     X_train, y_train, X_test, y_test = Read_from_csv(target, phase)
     y_train = y_train["Y/N"]
     y_test = y_test["Y/N"]
@@ -384,7 +384,7 @@ def mortality_rate_yn(phase):
         and c != "icdcode"
         and c != "eligibility/maximum_age"
     ]
-    print(drop_columns)
+
     X_train = X_train.drop(columns=drop_columns, axis=1)
     X_valid = X_valid.drop(columns=drop_columns, axis=1)
     X_test = X_test.drop(columns=drop_columns, axis=1)
@@ -558,12 +558,8 @@ def mortality_rate_yn(phase):
 
 
 def serious_adverse_rate(phase):
-    target = "adverse-event-rate-prediction"
+    target = "serious_adverse_rate"
     X_train, y_train, X_test, y_test = Read_from_csv(target, phase)
-
-    if "nctid" not in X_train.columns:
-        X_train.rename(columns={"ntcid": "nctid"}, inplace=True)
-        X_test.rename(columns={"ntcid": "nctid"}, inplace=True)
 
     # Randomly split the training set into a validation set
     X_train, X_valid, y_train, y_valid = train_test_split(
@@ -770,20 +766,10 @@ def serious_adverse_rate(phase):
 
 
 def serious_adverse_rate_yn(phase):
-    target = "adverse-event-rate-prediction"
+    target = "serious_adverse_rate_yn"
     X_train, y_train, X_test, y_test = Read_from_csv(target, phase)
     y_train = y_train["Y/N"]
     y_test = y_test["Y/N"]
-
-    if "nctid" not in X_train.columns:
-        X_train.rename(columns={"ntcid": "nctid"}, inplace=True)
-        X_test.rename(columns={"ntcid": "nctid"}, inplace=True)
-
-    if phase is not None:
-        X_train = X_train[X_train["phase"] == phase]
-        y_train = y_train[X_train.index]
-        X_test = X_test[X_test["phase"] == phase]
-        y_test = y_test[X_test.index]
 
     # Randomly split the training set into a validation set
     X_train, X_valid, y_train, y_valid = train_test_split(
@@ -973,10 +959,6 @@ def serious_adverse_rate_yn(phase):
 def patient_dropout_rate(phase):
     target = "patient_dropout_rate"
     X_train, y_train, X_test, y_test = Read_from_csv(target, phase)
-
-    if "nctid" not in X_train.columns:
-        X_train.rename(columns={"ntcid": "nctid"}, inplace=True)
-        X_test.rename(columns={"ntcid": "nctid"}, inplace=True)
 
     # Randomly split the training set into a validation set
     X_train, X_valid, y_train, y_valid = train_test_split(
@@ -1184,14 +1166,10 @@ def patient_dropout_rate(phase):
 
 
 def patient_dropout_rate_yn(phase):
-    target = "patient_dropout_rate"
+    target = "patient_dropout_rate_yn"
     X_train, y_train, X_test, y_test = Read_from_csv(target, phase)
     y_train = y_train["Y/N"]
     y_test = y_test["Y/N"]
-
-    if "nctid" not in X_train.columns:
-        X_train.rename(columns={"ntcid": "nctid"}, inplace=True)
-        X_test.rename(columns={"ntcid": "nctid"}, inplace=True)
 
     # Randomly split the training set into a validation set
     X_train, X_valid, y_train, y_valid = train_test_split(
@@ -1379,12 +1357,8 @@ def patient_dropout_rate_yn(phase):
 
 
 def duration(phase):
-    target = "trial-duration-prediction"
+    target = "trial_duration_prediction"
     X_train, y_train, X_test, y_test = Read_from_csv(target, phase)
-
-    if "nctid" not in X_train.columns:
-        X_train.rename(columns={"ntcid": "nctid"}, inplace=True)
-        X_test.rename(columns={"ntcid": "nctid"}, inplace=True)
 
     # Randomly split the training set into a validation set
     X_train, X_valid, y_train, y_valid = train_test_split(
@@ -1579,14 +1553,11 @@ def duration(phase):
 
 
 def outcome(phase):
-    target = "trial-approval-prediction"
+    target = "trial_approval_prediction"
     X_train, y_train, X_test, y_test = Read_from_csv(target, phase)
+        
     y_train = y_train["outcome"]
     y_test = y_test["outcome"]
-
-    if "nctid" not in X_train.columns:
-        X_train.rename(columns={"ntcid": "nctid"}, inplace=True)
-        X_test.rename(columns={"ntcid": "nctid"}, inplace=True)
 
     # Randomly split the training set into a validation set
     X_train, X_valid, y_train, y_valid = train_test_split(
@@ -1783,15 +1754,11 @@ def failure_reason(phase):
             return 2
         elif x == "Others":
             return 3
-
-    target = "trial-failure-reason-prediction"
+    
+    target = "trial_failure_reason_prediction"
     X_train, y_train, X_test, y_test = Read_from_csv(target, phase)
     y_train = y_train["failure_reason"].apply(mapper)
     y_test = y_test["failure_reason"].apply(mapper)
-
-    if "nctid" not in X_train.columns:
-        X_train.rename(columns={"ntcid": "nctid"}, inplace=True)
-        X_test.rename(columns={"ntcid": "nctid"}, inplace=True)
 
     # Randomly split the training set into a validation set
     X_train, X_valid, y_train, y_valid = train_test_split(
@@ -1997,33 +1964,9 @@ class Dose_dataset(Dataset):
         )
 
 
-# def dose_collate_fn(x):
-#     nctid_lst = [i[0] for i in x]     ### ['NCT00604461', ..., 'NCT00788957']
-#     label_vec = default_collate([i[1] for i in x])  ### shape n,
-#     smiles_lst = [smiles_txt_to_lst(i[2]) for i in x]
-#     mesh_lst = [mesh_term2feature(i[3]) for i in x]
-#     return [nctid_lst, label_vec, smiles_lst, mesh_lst]
-
-
 def dose(phase):
-    target = "drug-dose-prediction"
-    dataset = load_dataset("ML2Healthcare/ClinicalTrialDataset")
-    dataset = dataset["train"].to_dict()
-    for task, phases, type_, table in zip(
-        dataset["task"], dataset["phase"], dataset["type"], dataset["data"]
-    ):
-        if task == target and phase == "All" and type_ == "train_x":
-            X_train.append(pd.DataFrame.from_dict(eval(table, {"nan": np.nan})))
-        elif task == target and phase == "All" and type_ == "train_y_cls":
-            y_train.append(pd.DataFrame.from_dict(eval(table, {"nan": np.nan})))
-        elif task == target and phase == "All" and type_ == "test_x":
-            X_test.append(pd.DataFrame.from_dict(eval(table, {"nan": np.nan})))
-        elif task == target and phase == "All" and type_ == "test_y_cls":
-            y_test.append(pd.DataFrame.from_dict(eval(table, {"nan": np.nan})))
-
-    if "nctid" not in X_train.columns:
-        X_train.rename(columns={"ntcid": "nctid"}, inplace=True)
-        X_test.rename(columns={"ntcid": "nctid"}, inplace=True)
+    target = "drug_dose_prediction"
+    X_train, y_train, X_test, y_test = Read_from_csv(target, phase=None)
 
     # Randomly split the training set into a validation set
     X_train, X_valid, y_train, y_valid = train_test_split(
@@ -2080,23 +2023,7 @@ def dose(phase):
 
 def dose_cls(phase):
     target = "drug-dose-prediction"
-    dataset = load_dataset("ML2Healthcare/ClinicalTrialDataset")
-    dataset = dataset["train"].to_dict()
-    for task, phases, type_, table in zip(
-        dataset["task"], dataset["phase"], dataset["type"], dataset["data"]
-    ):
-        if task == target and phase == "All" and type_ == "train_x":
-            X_train = pd.DataFrame.from_dict(eval(table, {"nan": np.nan}))
-        elif task == target and phase == "All" and type_ == "train_y_cls":
-            y_train = pd.DataFrame.from_dict(eval(table, {"nan": np.nan}))["Avg"]
-        elif task == target and phase == "All" and type_ == "test_x":
-            X_test = pd.DataFrame.from_dict(eval(table, {"nan": np.nan}))
-        elif task == target and phase == "All" and type_ == "test_y_cls":
-            y_test = pd.DataFrame.from_dict(eval(table, {"nan": np.nan}))["Avg"]
-
-    if "nctid" not in X_train.columns:
-        X_train.rename(columns={"ntcid": "nctid"}, inplace=True)
-        X_test.rename(columns={"ntcid": "nctid"}, inplace=True)
+    X_train, y_train, X_test, y_test = Read_from_csv(target, phase=None)
 
     # Randomly split the training set into a validation set
     X_train, X_valid, y_train, y_valid = train_test_split(
@@ -2116,7 +2043,7 @@ def dose_cls(phase):
         return [nctid_lst, label_vec, smiles_lst, mesh_lst]
 
     train_nctid_lst = X_train.index.tolist()
-    train_label_lst = y_train.tolist()
+    train_label_lst = y_train["Max"].tolist()
     train_smiles_lst = X_train["smiless"].fillna('["unknown"]').tolist()
     train_mesh_lst = X_train[mesh_term].values.tolist()
     train_dataset = Dose_dataset(
@@ -2127,7 +2054,7 @@ def dose_cls(phase):
     )
 
     valid_nctid_lst = X_valid.index.tolist()
-    valid_label_lst = y_valid.tolist()
+    valid_label_lst = y_valid["Max"].tolist()
     valid_smiles_lst = X_valid["smiless"].fillna('["unknown"]').tolist()
     valid_mesh_lst = X_valid[mesh_term].values.tolist()
     valid_dataset = Dose_dataset(
@@ -2138,7 +2065,7 @@ def dose_cls(phase):
     )
 
     test_nctid_lst = X_test.index.tolist()
-    test_label_lst = y_test.tolist()
+    test_label_lst = y_test["Max"].tolist()
     test_smiles_lst = X_test["smiless"].fillna('["unknown"]').tolist()
     test_mesh_lst = X_test[mesh_term].values.tolist()
     test_dataset = Dose_dataset(

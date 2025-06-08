@@ -72,6 +72,7 @@ def get_mpnn_model(device):
 							weight_decay=0, 
 							save_name = 'admet_')
 		admet_model.train(admet_trainloader_lst, admet_testloader_lst)
+		os.makedirs('save_model', exist_ok=True)
 		torch.save(admet_model, admet_model_path)
 	else:
 		admet_model = torch.load(admet_model_path)

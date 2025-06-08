@@ -73,16 +73,17 @@ def find_ancestor_for_icdcode(icdcode, icdcode2ancestor):
 
 
 def build_icdcode2ancestor_dict():
-	pkl_file = "DANet/data/icdcode2ancestor_dict.pkl"
+	pkl_file = "data/icdcode2ancestor_dict.pkl"
 	if os.path.exists(pkl_file):
 		icdcode2ancestor = pickle.load(open(pkl_file, 'rb'))
 		return icdcode2ancestor 
-	all_code = collect_all_icdcodes() 
-	icdcode2ancestor = defaultdict(list)
-	for code in all_code:
-		find_ancestor_for_icdcode(code, icdcode2ancestor)
-	pickle.dump(icdcode2ancestor, open(pkl_file,'wb'))
-	return icdcode2ancestor 
+	raise ValueError("Please download the icdcode2ancestor_dict.pkl file from the repository or run the code to generate it. ")
+	# all_code = collect_all_icdcodes() 
+	# icdcode2ancestor = defaultdict(list)
+	# for code in all_code:
+	# 	find_ancestor_for_icdcode(code, icdcode2ancestor)
+	# pickle.dump(icdcode2ancestor, open(pkl_file,'wb'))
+	# return icdcode2ancestor 
 
 
 def collect_all_code_and_ancestor():
@@ -211,8 +212,13 @@ class GRAM(nn.Sequential):
 
 
 if __name__ == '__main__':
-	dic = build_icdcode2ancestor_dict() 
-
+	# dic = build_icdcode2ancestor_dict() 
+	pkl_file = "data/icdcode2ancestor_dict.pkl"
+	all_code = collect_all_icdcodes() 
+	icdcode2ancestor = defaultdict(list)
+	for code in all_code:
+		find_ancestor_for_icdcode(code, icdcode2ancestor)
+	pickle.dump(icdcode2ancestor, open(pkl_file,'wb'))
 
 
 
